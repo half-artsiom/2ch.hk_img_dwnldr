@@ -11,26 +11,31 @@ import org.jsoup.helper.Validate;
 
 public class ImgDownloader {
 	public static void main(String[] args) throws IOException {
-		//check if board exist
-		Scanner inputBoard = new Scanner(System. in );
-		System.out.print("Input board name (shortened version): ");
-		getBoardList(inputBoard.next());
-		
-		//input thread URL
+		Scanner userMode = new Scanner(System.in);
+		System.out.print("Choose mode: download all threads on first page (press X/x) or download thread(Y/y): ");
+		String userModeAnswer = userMode.next();
+		switch(userModeAnswer.toLowerCase()) {
+			case "x":
+				getBoardList();
+				break;
+			case "y":
+				downloadThreadMenu();
+				break;
+			default:
+				System.out.println("Please choose mode (answer X or Y)");
+		}
+	}
+	
+	public static void downloadThreadMenu() throws IOException {
 		Scanner inputURL = new Scanner(System. in );
 		System.out.print("Enter URL: ");
 		String urlPath = inputURL.next();
-		String tempURL;
 		List < String > imgsURL = new ArrayList < String > ();
-		Document doc = Jsoup.connect(urlPath).get();
-		Elements imgs = doc.select("figcaption.file-attr > a.desktop");
-		for (Element src: imgs) {
-			imgsURL.add(src.attr("abs:href"));
-		}
-		for (int i = 0; i < imgs.size(); i++) {
-			tempURL = imgsURL.get(i).toString();
-			saveImage(tempURL, "D:\\2ch", tempURL.substring(tempURL.lastIndexOf('/')));
-			if (i == imgs.size() - 1) {
+		imgsURL = getImgUrlPath( urlPath );
+		for (int i = 0; i < imgsURL.size(); i++) {
+		//	String directory = "D:\\2ch" + urlPath.substring(14, urlPath.lastIndexOf('/')).replace('/', '\\');
+			saveImage(imgsURL.get(i).toString(), "D:\\2ch", imgsURL.get(i).toString().substring(imgsURL.get(i).toString().lastIndexOf('/')));
+			if (i == imgsURL.size() - 1) {
 				System.out.println("All files were saved");
 			}
 		}
@@ -53,27 +58,48 @@ public class ImgDownloader {
 		os.close();
 		System.out.println("File: " + imageURL + " saved to: " + destination);
 	}
-	
-	public static void getBoardList(String boardName) throws IOException {
+
+	public static void getBoardList() throws IOException {
+		Scanner inputBoard = new Scanner(System. in );
+		System.out.print("Input board name (shortened version): ");
+		String boardName = inputBoard.next().toLowerCase();
 		boardName = "/" + boardName + "/";
+		//get board list
 		Document doc = Jsoup.connect("https://2ch.hk/").get();
 		Elements boards = doc.select("optgroup option[value]");
 		List < String > boardNames = new ArrayList < String > ();
 		for (Element src: boards) {
 			boardNames.add(src.attr("value"));
 		}
-		
+		//check if board in list
 		if (boardNames.contains(boardName)) {
 			List < String > threadList = new ArrayList < String > (); 
+			List < String > imgsURL = new ArrayList < String > ();
+			String threadURL;
+			//if in list get list of threads and return this list
 			threadList = getThreadList(boardName);
 			for (int i = 0; i < threadList.size(); i++) {
-				System.out.println("https://2ch.hk" + boardName + "res/" + threadList.get(i).toString().replace("thread-", "") + ".html");
+				threadURL = "https://2ch.hk" + boardName + "res/" + threadList.get(i).toString().replace("thread-", "") + ".html";
+				imgsURL = getImgUrlPath(threadURL);
+				for (int j = 0; j < imgsURL.size(); j++) {
+					saveImage(imgsURL.get(j).toString(), "D:\\2ch", imgsURL.get(j).toString().substring(imgsURL.get(j).toString().lastIndexOf('/')));
+				}
 			}
 		}
 		else {
 			System.out.println("There is no such board");
 		}
 
+	}
+	
+	public static List< String > getImgUrlPath(String threadURL) throws IOException {
+		List < String > imgPathList = new ArrayList < String > ();
+		Document doc = Jsoup.connect(threadURL).get();
+		Elements imgs = doc.select("figcaption.file-attr > a.desktop");
+		for (Element src: imgs) {
+			imgPathList.add(src.attr("abs:href"));
+		}
+		return imgPathList;
 	}
 	
 	public static List< String > getThreadList(String boardName) throws IOException {
