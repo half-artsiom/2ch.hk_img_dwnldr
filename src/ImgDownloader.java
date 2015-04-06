@@ -11,6 +11,12 @@ import org.jsoup.helper.Validate;
 
 public class ImgDownloader {
 	public static void main(String[] args) throws IOException {
+		//check if board exist
+		Scanner inputBoard = new Scanner(System. in );
+		System.out.print("Input board name (shortened version): ");
+		getBoardList(inputBoard.next());
+		
+		//input thread URL
 		Scanner inputURL = new Scanner(System. in );
 		System.out.print("Enter URL: ");
 		String urlPath = inputURL.next();
@@ -46,5 +52,37 @@ public class ImgDownloader {
 		is.close();
 		os.close();
 		System.out.println("File: " + imageURL + " saved to: " + destination);
+	}
+	
+	public static void getBoardList(String boardName) throws IOException {
+		boardName = "/" + boardName + "/";
+		Document doc = Jsoup.connect("https://2ch.hk/").get();
+		Elements boards = doc.select("optgroup option[value]");
+		List < String > boardNames = new ArrayList < String > ();
+		for (Element src: boards) {
+			boardNames.add(src.attr("value"));
+		}
+		
+		if (boardNames.contains(boardName)) {
+			List < String > threadList = new ArrayList < String > (); 
+			threadList = getThreadList(boardName);
+			for (int i = 0; i < threadList.size(); i++) {
+				System.out.println("https://2ch.hk" + boardName + "res/" + threadList.get(i).toString().replace("thread-", "") + ".html");
+			}
+		}
+		else {
+			System.out.println("There is no such board");
+		}
+
+	}
+	
+	public static List< String > getThreadList(String boardName) throws IOException {
+		Document doc = Jsoup.connect("https://2ch.hk" + boardName).get();
+		Elements threads = doc.select("div.thread");
+		List < String > threadList = new ArrayList < String > ();
+		for (Element src: threads) {
+			threadList.add(src.attr("id"));
+		}
+		return threadList;		
 	}
 }
