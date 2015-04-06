@@ -24,6 +24,9 @@ public class ImgDownloader {
 		for (int i = 0; i < imgs.size(); i++) {
 			tempURL = imgsURL.get(i).toString();
 			saveImage(tempURL, "D:\\2ch", tempURL.substring(tempURL.lastIndexOf('/')));
+			if (i == imgs.size() - 1) {
+				System.out.println("All files were saved");
+			}
 		}
 	}
 
