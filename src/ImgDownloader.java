@@ -33,20 +33,24 @@ public class ImgDownloader {
 		List < String > imgsURL = new ArrayList < String > ();
 		imgsURL = getImgUrlPath( urlPath );
 		for (int i = 0; i < imgsURL.size(); i++) {
-		//	String directory = "D:\\2ch" + urlPath.substring(14, urlPath.lastIndexOf('/')).replace('/', '\\');
-			saveImage(imgsURL.get(i).toString(), "D:\\2ch", imgsURL.get(i).toString().substring(imgsURL.get(i).toString().lastIndexOf('/')));
+			saveImage(imgsURL.get(i).toString(), imgsURL.get(i).toString().substring(imgsURL.get(i).toString().lastIndexOf('/')));
 			if (i == imgsURL.size() - 1) {
 				System.out.println("All files were saved");
 			}
 		}
 	}
 
-	public static void saveImage(String imageURL, String destination, String fileName) throws IOException {
+	public static void saveImage(String imageURL, String fileName) throws IOException {
+		String destination = "D:\\2ch" + 
+								imageURL.substring(imageURL.indexOf("hk")+2, imageURL.indexOf("src")) + 	//board name
+								imageURL.substring(imageURL.indexOf("src")+4, imageURL.lastIndexOf('/')); 	//thread number
+		destination = destination.replace('/', '\\');
 		File directory = new File(destination);
 		if (!directory.exists()) {
-			directory.mkdir();
+			directory.mkdirs();
 		}
 		URL url = new URL(imageURL);
+		try {
 		InputStream is = url.openStream();
 		OutputStream os = new FileOutputStream(destination + fileName);
 		byte[] b = new byte[2048];
@@ -57,6 +61,10 @@ public class ImgDownloader {
 		is.close();
 		os.close();
 		System.out.println("File: " + imageURL + " saved to: " + destination);
+		}
+		catch (java.io.FileNotFoundException e) {
+			System.out.println("File: " + imageURL + " not found!");
+		}
 	}
 
 	public static void getBoardList() throws IOException {
@@ -82,7 +90,7 @@ public class ImgDownloader {
 				threadURL = "https://2ch.hk" + boardName + "res/" + threadList.get(i).toString().replace("thread-", "") + ".html";
 				imgsURL = getImgUrlPath(threadURL);
 				for (int j = 0; j < imgsURL.size(); j++) {
-					saveImage(imgsURL.get(j).toString(), "D:\\2ch", imgsURL.get(j).toString().substring(imgsURL.get(j).toString().lastIndexOf('/')));
+					saveImage(imgsURL.get(j).toString(), imgsURL.get(j).toString().substring(imgsURL.get(j).toString().lastIndexOf('/')));
 				}
 			}
 		}
