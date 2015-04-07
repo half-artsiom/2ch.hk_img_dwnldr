@@ -12,6 +12,7 @@ TODO:
 - edit switch statement;
 - download full board (all pages);
 - maybe wil try to make gui (using Swing, keke);
+- fix bug with /mobi/ board;
 
 DONE:
 - download in specific path %hard_drive%://%user_path%/%thematic_board_name%/%thread_number%/;
