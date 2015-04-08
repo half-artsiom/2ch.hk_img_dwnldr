@@ -14,16 +14,18 @@ public class ImgDownloader {
 		Scanner userMode = new Scanner(System.in);
 		System.out.print("Choose mode: download all threads on first page (press X/x) or download thread(Y/y): ");
 		String userModeAnswer = userMode.next();
-		switch(userModeAnswer.toLowerCase()) {
-			case "x":
-				getBoardList();
-				break;
-			case "y":
-				downloadThreadMenu();
-				break;
-			default:
-				System.out.println("Please choose mode (answer X or Y)");
-		}
+			switch(userModeAnswer.toLowerCase()) {
+				case "x":
+					getBoardList();
+					break;
+				case "y":
+					downloadThreadMenu();
+					break;
+				default:
+					System.out.println("Please choose mode (answer X or Y)");
+					break;
+			}
+		
 	}
 	
 	public static void downloadThreadMenu() throws IOException {
@@ -42,8 +44,8 @@ public class ImgDownloader {
 
 	public static void saveImage(String imageURL, String fileName) throws IOException {
 		String destination = "D:\\2ch" + 
-								imageURL.substring(imageURL.indexOf("hk")+2, imageURL.indexOf("src")) + 	//board name
-								imageURL.substring(imageURL.indexOf("src")+4, imageURL.lastIndexOf('/')); 	//thread number
+					imageURL.substring(imageURL.indexOf("hk")+2, imageURL.indexOf("src")) +
+					imageURL.substring(imageURL.indexOf("src")+4, imageURL.lastIndexOf('/'));
 		destination = destination.replace('/', '\\');
 		File directory = new File(destination);
 		if (!directory.exists()) {
@@ -72,19 +74,16 @@ public class ImgDownloader {
 		System.out.print("Input board name (shortened version): ");
 		String boardName = inputBoard.next().toLowerCase();
 		boardName = "/" + boardName + "/";
-		//get board list
 		Document doc = Jsoup.connect("https://2ch.hk/").get();
 		Elements boards = doc.select("optgroup option[value]");
 		List < String > boardNames = new ArrayList < String > ();
 		for (Element src: boards) {
 			boardNames.add(src.attr("value"));
 		}
-		//check if board in list
 		if (boardNames.contains(boardName)) {
 			List < String > threadList = new ArrayList < String > (); 
 			List < String > imgsURL = new ArrayList < String > ();
 			String threadURL;
-			//if in list get list of threads and return this list
 			threadList = getThreadList(boardName);
 			for (int i = 0; i < threadList.size(); i++) {
 				threadURL = "https://2ch.hk" + boardName + "res/" + threadList.get(i).toString().replace("thread-", "") + ".html";
