@@ -11,21 +11,27 @@ import org.jsoup.helper.Validate;
 
 public class ImgDownloader {
 	public static void main(String[] args) throws IOException {
+		boolean answer;
+		do {
 		Scanner userMode = new Scanner(System.in);
 		System.out.print("Choose mode: download all threads on first page (press X/x) or download thread(Y/y): ");
 		String userModeAnswer = userMode.next();
 			switch(userModeAnswer.toLowerCase()) {
 				case "x":
 					getBoardList();
+					answer = true;
 					break;
 				case "y":
 					downloadThreadMenu();
+					answer = true;
 					break;
 				default:
 					System.out.println("Please choose mode (answer X or Y)");
+					answer = false;
 					break;
 			}
-		
+		}
+		while (!answer);
 	}
 	
 	public static void downloadThreadMenu() throws IOException {
