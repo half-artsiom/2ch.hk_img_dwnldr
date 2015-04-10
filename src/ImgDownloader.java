@@ -7,13 +7,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.jsoup.helper.Validate;
 
 public class ImgDownloader {
+	private static Scanner userMode;
+	private static Scanner inputURL;
+	private static Scanner inputBoard;
+
 	public static void main(String[] args) throws IOException {
 		boolean answer;
 		do {
-		Scanner userMode = new Scanner(System.in);
+		userMode = new Scanner(System.in);
 		System.out.print("Choose mode: download all threads on first page (press X/x) or download thread(Y/y): ");
 		String userModeAnswer = userMode.next();
 			switch(userModeAnswer.toLowerCase()) {
@@ -35,7 +38,7 @@ public class ImgDownloader {
 	}
 	
 	public static void downloadThreadMenu() throws IOException {
-		Scanner inputURL = new Scanner(System. in );
+		inputURL = new Scanner(System. in );
 		System.out.print("Enter URL: ");
 		String urlPath = inputURL.next();
 		List < String > imgsURL = new ArrayList < String > ();
@@ -76,7 +79,7 @@ public class ImgDownloader {
 	}
 
 	public static void getBoardList() throws IOException {
-		Scanner inputBoard = new Scanner(System. in );
+		inputBoard = new Scanner(System. in );
 		System.out.print("Input board name (shortened version): ");
 		String boardName = inputBoard.next().toLowerCase();
 		boardName = "/" + boardName + "/";
